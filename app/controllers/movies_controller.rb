@@ -6,20 +6,6 @@ class MoviesController < ApplicationController
     # will render app/views/movies/show.<extension> by default
   end
 
-  def sort_title
-    session[:sort_by] = :title
-    session[:title_class] = 'hilite'
-    session[:date_class]=''
-    redirect_to movies_path
-  end
-
-  def sort_date
-    session[:sort_by] = :release_date
-    session[:date_class]='hilite'
-    session[:title_class]=''
-    redirect_to movies_path
-  end
-
   def index
     @all_ratings = ['G','PG','PG-13','R','NC-17']
     @ratings = session[:ratings]==nil ? @all_ratings:session[:ratings]
@@ -32,6 +18,15 @@ class MoviesController < ApplicationController
       if @ratings.include? movie[:rating]
         @movies.push(movie)
       end
+    end
+    unless params[:sort_by].nil?
+    session[:sort_by] = params[:sort_by]
+      if params[:sort_by] == 'title'
+      session[:title_class] = 'hilite' 
+      session[:date_class] = '' end
+      if params[:sort_by] == 'release_date'
+      session[:date_class] = 'hilite' 
+      session[:title_class] = '' end
     end
     unless session[:sort_by].nil?
       @movies = @movies.sort_by { |movie| movie.send(session[:sort_by])}
