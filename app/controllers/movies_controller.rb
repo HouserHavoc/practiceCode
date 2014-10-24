@@ -21,10 +21,20 @@ class MoviesController < ApplicationController
   end
 
   def index
-    @movies = Movie.all
-    sort_symbol = session[:sort_by]
-    unless sort_symbol.nil?
-      @movies = @movies.sort_by { |movie| movie.send(sort_symbol)}
+    @all_ratings = ['G','PG','PG-13','R','NC-17']
+    @ratings = session[:ratings]==nil ? @all_ratings:session[:ratings]
+    unless params[:ratings].nil? 
+      @ratings = params[:ratings]
+      session[:ratings] = @ratings
+    end
+    @movies = []
+    Movie.all.each do |movie|
+      if @ratings.include? movie[:rating]
+        @movies.push(movie)
+      end
+    end
+    unless session[:sort_by].nil?
+      @movies = @movies.sort_by { |movie| movie.send(session[:sort_by])}
     end
   end
 
@@ -55,5 +65,4 @@ class MoviesController < ApplicationController
     flash[:notice] = "Movie '#{@movie.title}' deleted."
     redirect_to movies_path
   end
-
 end
