@@ -13,12 +13,14 @@ class MoviesController < ApplicationController
       @ratings = params[:ratings]
       session[:ratings] = @ratings
     end
+    
     @movies = []
     Movie.all.each do |movie|
       if @ratings.include? movie[:rating]
         @movies.push(movie)
       end
     end
+
     unless params[:sort_by].nil?
     session[:sort_by] = params[:sort_by]
       if params[:sort_by] == 'title'
